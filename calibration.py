@@ -7,12 +7,16 @@ from scipy.special import kv
 def Sho_power_response(omega, omega_R, Q, A, B):
 	return A + (B * omega_R**4) / ((omega**2 - omega_R**2)**2 + ((omega**2 * omega_R**2) / Q**2))
 
-width = 900E-9 # width / m
-eta = 0.000979 # dynamic viscosity of water / Pa.s
-rho = 998.29 # density of water / kg.m^-3
-L = 58E-6 # length / m
+#def Sho_power_response(omega, omega_R, Q, B):
+#	return (B * omega_R**4) / ((omega**2 - omega_R**2)**2 + ((omega**2 * omega_R**2) / Q**2))
 
-f = open('142210newcal.txt', 'rU')
+
+width = 1E-6 # width / m
+eta = 1.8205E-5 # dynamic viscosity of air / Pa.s
+rho = 1.2047 # density of air / kg.m^-3
+L = 50E-6 # length / m
+
+f = open('test13.txt', 'rU')
 lines=f.readlines()[1:]
 f.close()
 
@@ -25,15 +29,18 @@ for l in lines:
 
 ang_freq = [i * 2 * math.pi for i in frequency]
 
-initial = [1000, 10, 1E-21, 1E-20]
+#initial = [1000, 10, 1E-21]
+initial = [1000, 0.04, 1E-21, 1E-21]
 fit = optimization.curve_fit(Sho_power_response, ang_freq, PSD, initial)
 
 fit_data = [Sho_power_response(f, fit[0][0], fit[0][1], fit[0][2], fit[0][3]) for f in ang_freq]
+#fit_data = [Sho_power_response(f, fit[0][0], fit[0][1], fit[0][2]) for f in ang_freq]
 
 res_ang_freq = fit[0][0]
 quality_factor = fit[0][1]
 white_noise_floor = fit[0][2]
 Pdc = fit[0][3]
+#Pdc = fit[0][2]
 print 'Resonant frequency =', res_ang_freq / (2 * math.pi), 'Hz'
 print 'Quality factor =', quality_factor
 print 'White noise floor =', white_noise_floor, 'V^2 / Hz'
